@@ -1,4 +1,4 @@
-import NextAuth from "next-auth/next";
+import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { connectToDB } from "@utils/database";
 import User from "@models/user";
@@ -13,11 +13,11 @@ const handler = NextAuth({
     async session({ session }) {
       const sessionUser = await User.findOne({
         email: session.user.email,
-      });
+      })
       session.user.id = sessionUser._id.toString();
       return session;
     },
-    async signIn({ profile }) {
+    async signIn({account, profile,user,credentials }) {
       try {
         await connectToDB();
 
@@ -37,7 +37,7 @@ const handler = NextAuth({
 
         return true;
       } catch (error) {
-        console.log(error);
+        console.log("Error checking if user exists",error.message);
         return false;
       }
     },
